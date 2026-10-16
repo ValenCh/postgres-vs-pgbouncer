@@ -1,0 +1,9 @@
+# Ubuntu 24.04 (noble) empaqueta exactamente PgBouncer 1.22.0, la versión del paper.
+FROM ubuntu:24.04
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends pgbouncer ca-certificates \
+ && rm -rf /var/lib/apt/lists/* \
+ && pgbouncer --version | head -1 | grep -q "PgBouncer 1.22" \
+ && useradd --system --no-create-home --shell /usr/sbin/nologin pgbouncer
+USER pgbouncer
+CMD ["pgbouncer", "/etc/pgbouncer/pgbouncer.ini"]

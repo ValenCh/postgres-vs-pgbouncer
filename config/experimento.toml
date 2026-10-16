@@ -1,0 +1,177 @@
+# =============================================================================
+# Configuración centralizada de los experimentos.
+# Todo parámetro experimental vive aquí (o en .env para recursos/credenciales).
+# Los scripts y módulos de src/ leen este archivo; no duplican valores.
+# =============================================================================
+
+[proyecto]
+base_de_datos = "bench"          # debe coincidir con POSTGRES_DB de .env
+usuario_admin = "pgadmin"        # debe coincidir con POSTGRES_USER de .env
+rol_legitimo  = "app_core"
+rol_atacante  = "app_portal"
+
+[seguridad]
+# El generador de carga SOLO se conecta a estos hosts, y además exige que
+# resuelvan a direcciones loopback/privadas. Ver docs/arquitectura.md.
+hosts_permitidos = ["postgres", "pgbouncer", "localhost", "127.0.0.1"]
+
+[entorno_paper]
+# Valores de referencia del entorno descrito en la Sección 3.1 del paper.
+docker_engine = "25.0"
+kernel_linux = "6.5"
+postgresql = "16.4"
+pgbouncer = "1.22"
+pg_vcpu = 4
+pg_ram_mb = 4096
+pgbouncer_vcpu = 1
+pgbouncer_ram_mb = 512
+loadgen_vcpu = 4
+vcpu_fisicos_minimos = 9          # 4 + 1 + 4, con cpuset disjuntos
+
+[postgres_esperado]
+# Se comprueba con SHOW en el preflight y en tests contra postgresql.conf.
+max_connections = 100
+superuser_reserved_connections = 3
+shared_buffers = "1GB"            # SHOW lo devuelve normalizado (1024MB -> 1GB)
+work_mem = "4MB"
+max_wal_size = "2GB"
+checkpoint_completion_target = "0.9"
+
+[muestreo]
+intervalo_s = 5                   # cada cuánto se lee cgroup / pg_stat_activity
+
+[carga]
+ratio_efimeros = 0.3              # 30 % reconecta en cada transacción (pgbench -C)
+pausa_ms = [50, 500]              # \sleep uniforme entre transacciones (persistentes)
+reintento_pausa_ms = [50, 500]    # espera tras un fallo antes de reintentar (supuesto)
+timeout_conexion_s = 40           # > query_wait_timeout (30 s) para que el timeout lo imponga el pooler
+
+[v2]
+pausa_legit_ms = [50, 500]        # SUPUESTO: el paper no indica pausa de los legítimos en V2
+espera_ataque_s = 10              # time.sleep(10) del atacante
+reintento_ataque_ms = 100         # SUPUESTO: pausa mínima antes de reabrir tras un fallo
+# "detectar_cierre": el atacante vigila el socket durante la espera y reconecta
+#                    de inmediato si el servidor/pooler lo corta (intención del paper).
+# "sleep_literal":   duerme los 10 s completos y recién entonces reconecta.
+modo_ataque = "detectar_cierre"
+
+[pgbouncer]
+max_client_conn = 2500
+default_pool_size = 40            # DECISIÓN: sin esto el defecto (20) por par db/usuario
+                                  # impediría usar las 40 conexiones de max_db_connections
+min_pool_size = 20
+query_wait_timeout_s = 30
+auth_type = "scram-sha-256"
+
+# ----------------------------- Perfiles --------------------------------------
+[perfiles.paper]
+descripcion = "Réplica del diseño del paper (requiere >= 9 vCPU físicos y >= 8 GB RAM)"
+escala = 50
+duracion_s = 120
+calentamiento_s = 30
+repeticiones = 3
+niveles_v1 = [50, 100, 250, 500, 1000, 2000]
+clientes_v2 = 500
+atacantes_v2 = 60
+
+[perfiles.reducido]
+descripcion = "Equipos con pocos recursos. NO comparable con el paper."
+escala = 10
+duracion_s = 30
+calentamiento_s = 10
+repeticiones = 1
+niveles_v1 = [50, 100, 250, 500]
+clientes_v2 = 200
+atacantes_v2 = 24
+
+[perfiles.smoke]
+descripcion = "Prueba de funcionamiento (minutos). NO es un experimento."
+escala = 1
+duracion_s = 10
+calentamiento_s = 3
+repeticiones = 1
+niveles_v1 = [50]
+clientes_v2 = 50
+atacantes_v2 = 20
+
+# ----------------------------- Escenarios ------------------------------------
+# pool_mode = "directo" significa sin PgBouncer.
+[escenarios.A]
+nombre = "PostgreSQL nativo"
+vectores = [1, 2]
+destino_host = "postgres"
+destino_puerto = 5432
+pool_mode = "directo"
+
+[escenarios.B]
+nombre = "PgBouncer modo sesión (80 conexiones físicas)"
+vectores = [1]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "session"
+max_db_connections = 80
+
+[escenarios.C]
+nombre = "PgBouncer modo transacción (40 conexiones físicas)"
+vectores = [1]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+
+[escenarios.D1]
+nombre = "Modo transacción sin defensas (Esc. C bajo Vector 2)"
+vectores = [2]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+
+[escenarios.D2]
+nombre = "D1 + idle_in_transaction_session_timeout = 5000 ms (PostgreSQL)"
+vectores = [2]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+pg_roles = { app_portal = { idle_in_transaction_session_timeout = "5000ms" } }
+
+[escenarios.D3a]
+nombre = "D1 + idle_transaction_timeout = 500 ms (PgBouncer)"
+vectores = [2]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+idle_transaction_timeout_s = 0.5
+
+[escenarios.D3b]
+nombre = "D1 + cuota max_user_connections = 15 para app_portal"
+vectores = [2]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+cuota_por_rol = { app_portal = 15 }
+
+[escenarios.D3c]
+nombre = "D1 + idle_transaction_timeout 500 ms + cuota 15"
+vectores = [2]
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+idle_transaction_timeout_s = 0.5
+cuota_por_rol = { app_portal = 15 }
+
+# Variante OPCIONAL (no está en el paper): el corte de 500 ms aplicado del lado
+# de PostgreSQL en lugar de PgBouncer. Útil porque la Tabla 3 dice "PG/PgB 500ms".
+[escenarios.D3a_pg]
+nombre = "Variante: D3a con idle_in_transaction_session_timeout = 500 ms (PostgreSQL)"
+vectores = [2]
+extra = true
+destino_host = "pgbouncer"
+destino_puerto = 6432
+pool_mode = "transaction"
+max_db_connections = 40
+pg_roles = { app_portal = { idle_in_transaction_session_timeout = "500ms" } }

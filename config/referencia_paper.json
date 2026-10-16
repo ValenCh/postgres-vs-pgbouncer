@@ -1,0 +1,189 @@
+{
+ "_fuente": "Chiappini, Marini, Oyarzo y Sánchez. 'Evaluación Empírica de la Resiliencia en la Capa de Conexión de PostgreSQL ante Ataques de Denegación de Servicio mediante Multiplexación Transaccional'. UTN-FRLP. Tablas 2, 3, 4 y 5.",
+ "_advertencia": "VALORES PUBLICADOS EN EL PAPER. No son mediciones de este proyecto. Verificados manualmente contra el texto del PDF (Boceto nuevo.pdf).",
+ "_entorno": "Docker 25.0, kernel 6.5, PostgreSQL 16.4 (4 vCPU/4 GB), PgBouncer 1.22 (1 vCPU/512 MB), generador 4 vCPU (cpuset). Media de 3 ejecuciones de 120 s con 30 s de calentamiento.",
+ "vector1": {
+  "A": {
+   "50": {
+    "tps": 612,
+    "p95_ms": 81.4,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1420,
+    "cs_por_s": 14230,
+    "sys_pct": 18.2
+   },
+   "100": {
+    "tps": 485,
+    "p95_ms": 210.8,
+    "rechazo_pct": 3.2,
+    "ram_mb": 1890,
+    "cs_por_s": 38910,
+    "sys_pct": 39.5
+   },
+   "250": {
+    "tps": 198,
+    "p95_ms": 1420.5,
+    "rechazo_pct": 58.4,
+    "ram_mb": 1920,
+    "cs_por_s": 64540,
+    "sys_pct": 68.1
+   },
+   "500": {
+    "tps": 112,
+    "p95_ms": 3850.0,
+    "rechazo_pct": 79.1,
+    "ram_mb": 1950,
+    "cs_por_s": 82120,
+    "sys_pct": 79.6
+   },
+   "1000": {
+    "tps": 64,
+    "p95_ms": 8120.6,
+    "rechazo_pct": 89.5,
+    "ram_mb": 1980,
+    "cs_por_s": 94350,
+    "sys_pct": 86.4
+   },
+   "2000": {
+    "tps": 29,
+    "p95_ms": 14820.2,
+    "rechazo_pct": 94.8,
+    "ram_mb": 2010,
+    "cs_por_s": 98740,
+    "sys_pct": 91.1
+   }
+  },
+  "B": {
+   "50": {
+    "tps": 645,
+    "p95_ms": 76.2,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1412,
+    "cs_por_s": 11480,
+    "sys_pct": 13.9
+   },
+   "100": {
+    "tps": 590,
+    "p95_ms": 145.0,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1685,
+    "cs_por_s": 19420,
+    "sys_pct": 21.3
+   },
+   "250": {
+    "tps": 410,
+    "p95_ms": 680.2,
+    "rechazo_pct": 4.1,
+    "ram_mb": 1712,
+    "cs_por_s": 28150,
+    "sys_pct": 30.8
+   },
+   "500": {
+    "tps": 245,
+    "p95_ms": 2410.4,
+    "rechazo_pct": 28.6,
+    "ram_mb": 1728,
+    "cs_por_s": 34610,
+    "sys_pct": 38.1
+   },
+   "1000": {
+    "tps": 118,
+    "p95_ms": 6980.1,
+    "rechazo_pct": 64.2,
+    "ram_mb": 1745,
+    "cs_por_s": 41240,
+    "sys_pct": 44.5
+   },
+   "2000": {
+    "tps": 42,
+    "p95_ms": 12890.0,
+    "rechazo_pct": 81.5,
+    "ram_mb": 1762,
+    "cs_por_s": 46830,
+    "sys_pct": 48.9
+   }
+  },
+  "C": {
+   "50": {
+    "tps": 890,
+    "p95_ms": 28.4,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1345,
+    "cs_por_s": 6810,
+    "sys_pct": 7.8
+   },
+   "100": {
+    "tps": 945,
+    "p95_ms": 42.6,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1382,
+    "cs_por_s": 7940,
+    "sys_pct": 9.1
+   },
+   "250": {
+    "tps": 918,
+    "p95_ms": 118.7,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1398,
+    "cs_por_s": 8490,
+    "sys_pct": 10.4
+   },
+   "500": {
+    "tps": 884,
+    "p95_ms": 435.2,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1412,
+    "cs_por_s": 9130,
+    "sys_pct": 11.7
+   },
+   "1000": {
+    "tps": 842,
+    "p95_ms": 1280.4,
+    "rechazo_pct": 0.0,
+    "ram_mb": 1426,
+    "cs_por_s": 9870,
+    "sys_pct": 12.9
+   },
+   "2000": {
+    "tps": 795,
+    "p95_ms": 2890.6,
+    "rechazo_pct": 1.2,
+    "ram_mb": 1440,
+    "cs_por_s": 10620,
+    "sys_pct": 14.3
+   }
+  }
+ },
+ "vector2": {
+  "A": {
+   "tps": 58,
+   "p95_ms": 4920.4,
+   "rechazo_pct": 82.4
+  },
+  "D1": {
+   "tps": 14,
+   "p95_ms": 24600.0,
+   "rechazo_pct": 91.4
+  },
+  "D2": {
+   "tps": 86,
+   "p95_ms": 11240.5,
+   "rechazo_pct": 68.5
+  },
+  "D3a": {
+   "tps": 412,
+   "p95_ms": 1490.2,
+   "rechazo_pct": 12.8
+  },
+  "D3b": {
+   "tps": 548,
+   "p95_ms": 612.8,
+   "rechazo_pct": 0.0
+  },
+  "D3c": {
+   "tps": 691,
+   "p95_ms": 310.4,
+   "rechazo_pct": 0.0
+  }
+ }
+}

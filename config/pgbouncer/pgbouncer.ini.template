@@ -1,0 +1,26 @@
+; GENERADO por src/configuracion.py a partir de config/experimento.toml.
+; Escenario: $escenario - $nombre
+; No editar runtime/pgbouncer/pgbouncer.ini a mano: se regenera en cada punto experimental.
+
+[databases]
+$db = host=$pg_host port=$pg_port dbname=$db max_db_connections=$max_db_connections
+
+[users]
+$users_lines
+
+[pgbouncer]
+listen_addr = $listen_addr
+listen_port = $listen_port
+auth_type = $auth_type
+auth_file = $auth_file
+admin_users = $admin
+pool_mode = $pool_mode
+max_client_conn = $max_client_conn
+default_pool_size = $default_pool_size
+min_pool_size = $min_pool_size
+query_wait_timeout = $query_wait_timeout
+$extra
+ignore_startup_parameters = extra_float_digits
+log_connections = 0
+log_disconnections = 0
+stats_period = 60
