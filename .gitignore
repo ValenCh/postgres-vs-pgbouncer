@@ -1,0 +1,14 @@
+.env
+runtime/
+data/raw/*
+data/processed/*
+resultados/csv/*
+resultados/graficos/*
+resultados/pdf/*
+!**/.gitkeep
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+logs/
+!resultados/pdf/informe_*-paper.pdf

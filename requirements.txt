@@ -1,0 +1,7 @@
+# Dependencias del HOST (orquestador, análisis, gráficos, PDF). Python >= 3.11.
+rich>=13.7
+matplotlib>=3.8
+reportlab>=4.0
+pytest>=8.0
+# psycopg2-binary solo es necesario en el host para ejecutar tests que importan el generador.
+psycopg2-binary>=2.9,<3
